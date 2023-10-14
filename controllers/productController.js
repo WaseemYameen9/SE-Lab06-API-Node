@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 
 async function createProduct(req,res){
+    console.log(req.body);
     try{
         const product = await Product.create(req.body);
         res.status(201).json(product);
@@ -20,23 +21,24 @@ async function getAllProducts(req,res){
     }
 }
 
-async function updateProduct(){
-    try{
+async function updateProduct(req, res) {
+    try {
         const { id } = req.params;
-        const updatedProduct = await Product.findByIdAndUpdate(id,req.body,{new:true});
-        res.json(updatedProduct);
-
-    }
-    catch(err){
-        res.status(500).json({error: err.message});
+        const updates = req.body; // Extract updates from the request body
+        const updatedProduct = await Product.findOneAndUpdate({ id: id }, updates, { new: true });
+        
+        res.status(201).json(updatedProduct);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 }
+
 
 async function deleteProduct(req,res){
     try{
         const { id } = req.params;
-        await Product.findByIdAndRemove(id);
-        res.sendStatus(204);
+        await Product.findOneAndRemove({ id: id });
+        res.sendStatus(201);
     }
     catch(err){
         res.status(500).json({error: err.message});
